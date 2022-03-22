@@ -1,6 +1,7 @@
 const Vec2 = require('./modules/util.js').Vec2;
 const Level = require('./modules/level.js');
-const handleInput = require('./modules/input.js');
+const handleInput = require('./modules/input.js').input;
+const clearInput = require('./modules/input.js').clear;
 
 const entities = require('./modules/entities.js');
 
@@ -99,6 +100,12 @@ io.on("connection", socket => {
     });
 
     socket.on('joinGame', data => {
+        if (matchIdsByWallet[socket.userData.wallet]) {
+            const player = matches[matchIdsByWallet[socket.userData.wallet]].players[socket.userData.wallet];
+            if (player && player.socketID != null) {
+                io.sockets.sockets.get(player.socketID).disconnect();
+            }
+        }
         socket.join(data);
         matchIdsByWallet[socket.userData.wallet] = data;
     });
@@ -114,7 +121,6 @@ io.on("connection", socket => {
 
         const player = matches[matchIdsByWallet[socket.userData.wallet]].players[socket.userData.wallet];
 
-        socket.userData.skeleton = data.skeleton;
         socket.userData.hp = player ? player.hp : data.hp;
         socket.userData.pos = player ? player.pos : data.pos;
         socket.userData.vel = player ? player.vel : data.vel;
@@ -122,10 +128,6 @@ io.on("connection", socket => {
         socket.userData.pb = data.pb;
         socket.userData.command = null;
         socket.userData.facing = player ? player.facing : 1;
-        socket.userData.animation = {
-            name: "Idle",
-            loop: true
-        }
         newPlayer(data, socket);
         socket.broadcast.emit('addPlayer', {
             skeleton: data.skeleton,
@@ -141,12 +143,19 @@ io.on("connection", socket => {
 
     //Mirror player animations from client
     socket.on('animation', data => {
-        socket.userData.animation = data;
+        matches[matchIdsByWallet[socket.userData.wallet]].players[socket.userData.wallet].animation = data;
     });
 
     //Handle removing players from client worlds
     socket.on("disconnect", () => {
-        console.log(`Client ${socket.id} disconnected`);
+        if (matchIdsByWallet[socket.userData.wallet]){
+            const player = matches[matchIdsByWallet[socket.userData.wallet]].players[socket.userData.wallet];
+            player.socketID = null;
+            clearInput(player, socket);
+            console.log(`Player ${socket.userData.wallet} lost connection`);
+        } else {
+            console.log(`Client ${socket.id} disconnected`);
+        }
     });
 
     socket.on("chat message", msg => {
@@ -166,11 +175,17 @@ const newPlayer = (data, socket) => {
     const player = entities.createChar(socket);
     const match = matches[matchIdsByWallet[socket.userData.wallet]];
 
-    console.log('player ' + socket.userData.wallet + 'joined');
+    console.log('player ' + socket.userData.wallet + ' joined');
 
     match.players[socket.userData.wallet] = player;
+    player.socketID = socket.id;
+    player.skeleton = data.skeleton;
     player.pos = data.pos;
     player.vel = data.vel;
+    player.animation = {
+        name: "Idle",
+        loop: true
+    }
     match.level.entities.add(player);
     match.level.addInteractiveEntity(player);
     handleInput(player, socket);
@@ -183,27 +198,23 @@ const startBroadcast = (room) => {
 
         const roster = await io.in(room).fetchSockets();
 
-        for (const socket of roster) {
-            const ID = socket.userData.wallet;
-            if (socket.userData.skeleton != undefined && matches[room].players[ID]){
-                const ID = socket.userData.wallet;
-                pack[ID] = {
-                    hp: matches[room].players[ID].hp,
-                    skeleton: socket.userData.skeleton,
-                    pos: matches[room].players[ID].pos,
-                    vel: matches[room].players[ID].vel,
-                    command: matches[room].players[ID].command,
-                    heading: matches[room].players[ID].heading,
-                    pb: socket.userData.pb,
-                    facing: matches[room].players[ID].facing,
-                    grounded: matches[room].players[ID].isGrounded,
-                    animation: socket.userData.animation,
-                    hurtTime: matches[room].players[ID].hurtTime,
-                    hitSource: matches[room].players[ID].hitSource,
-                }
+        const playerIDs = Object.keys(matches[room].players);
+        for (const ID of playerIDs) {
+            pack[ID] = {
+                hp: matches[room].players[ID].hp,
+                skeleton: matches[room].players[ID].skeleton,
+                pos: matches[room].players[ID].pos,
+                vel: matches[room].players[ID].vel,
+                command: matches[room].players[ID].command,
+                heading: matches[room].players[ID].heading,
+                facing: matches[room].players[ID].facing,
+                grounded: matches[room].players[ID].isGrounded,
+                animation: matches[room].players[ID].animation,
+                hurtTime: matches[room].players[ID].hurtTime,
+                hitSource: matches[room].players[ID].hitSource,
             }
         }
-        if (Object.keys(pack).length > 0) io.emit('remoteData', pack);
+        if (Object.keys(pack).length > 0) io.to(room).emit('remoteData', pack);
     }, interval);
 }
 

@@ -3,7 +3,7 @@ export const bobbleheadMix = (skeleton) => {
     setMix(skeleton, "Run", "Idle", 0.5)
     setMix(skeleton, "Run", "Walk", 0.35)
     setMixAll(skeleton, "Jump", 0.3);
-    setMixAll(skeleton, "Crouch", 0.25);
+    setMixAll(skeleton, "Crouch", 0.12);
     setMixAll(skeleton, "Punch A", 0.05);
     setMixAll(skeleton, "Punch B", 0.05);
     setMixAll(skeleton, "Punch C", 0.15);
