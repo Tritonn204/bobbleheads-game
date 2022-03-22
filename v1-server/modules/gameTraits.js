@@ -53,15 +53,16 @@ class Punch extends Trait {
         this.engageTime = 0;
 
         this.delay = 0.1;
-        this.hitWindow = 0.15;
+        this.punchPenalty = 0.5;
+        this.hitWindow = 0.1;
 
         this.inset = 16;
-        this.width = 120;
+        this.width = 140;
         this.height = 100;
 
         this.bounds = new physics.BoundingBox();
 
-        this.cooldownDuration = 0.6;
+        this.cooldownDuration = 1.5;
         this.cooldownTimer = 0;
 
         this.animationNames = ["Punch A", "Punch B", "Punch C"];
@@ -73,7 +74,7 @@ class Punch extends Trait {
     }
 
     advance() {
-        if (this.cooldownTimer < this.cooldownDuration)
+        if (this.cooldownTimer < this.cooldownDuration && this.index == 1)
             return;
         if (!this.active)
             this.start();
@@ -83,11 +84,12 @@ class Punch extends Trait {
                 this.index++;
                 this.queued = true;
 
-                this.cooldownTimer -= 0.4
+                this.cooldownTimer -= this.punchPenalty;
                 this.cooldownTimer = Math.max(this.cooldownTimer, 0);
             }
-            if (this.index == 2)
+            if (this.index == 2) {
                 this.cooldownTimer = 0;
+            }
         }
     }
 
@@ -119,8 +121,7 @@ class Punch extends Trait {
             this.active = false;
             this.index = 0;
         }
-        if (this.active == false)
-            this.cooldownTimer += delta;
+        this.cooldownTimer += delta;
     }
 }
 
