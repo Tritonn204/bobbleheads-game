@@ -56,8 +56,8 @@ class Punch extends Trait {
         this.hitWindow = 0.15;
 
         this.inset = 16;
-        this.width = 60;
-        this.height = 96;
+        this.width = 120;
+        this.height = 100;
 
         this.bounds = new physics.BoundingBox();
 
