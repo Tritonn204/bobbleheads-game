@@ -42,7 +42,7 @@ const io = new socketIo.Server(server, {
 io.on("connection", socket => {
     //Default Values per player instance
     socket.userData = { pos: new Vec2(0,0), vel: new Vec2(0,0), heading: 0, dir: 0 };
-    console.log(`${socket.id} connected`);
+    console.log(`Client ${socket.id} connected`);
 
     socket.on('setWallet', data => {
         socket.userData.wallet = data;
@@ -147,6 +147,20 @@ io.on("connection", socket => {
     });
 
     //Handle removing players from client worlds
+    socket.on("disconnecting", (reason) => {
+        if (matchIdsByWallet[socket.userData.wallet]){
+            const player = matches[matchIdsByWallet[socket.userData.wallet]].players[socket.userData.wallet];
+            player.socketID = null;
+            clearInput(player, socket);
+        }
+        for (const room of socket.rooms) {
+            if (room !== socket.id) {
+                socket.to(room).emit("leftMessage", {reason: reason, user: socket.userData.wallet});
+            }
+        }
+        console.log(`Client ${socket.id} disconnected`);
+      });
+
     socket.on("disconnect", () => {
         if (matchIdsByWallet[socket.userData.wallet]){
             const player = matches[matchIdsByWallet[socket.userData.wallet]].players[socket.userData.wallet];
