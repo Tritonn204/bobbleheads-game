@@ -85,6 +85,10 @@ function App() {
 			correctChain();
 		});
 
+        socket.on("connect_error", (err) => {
+          console.log(`connect_error due to ${err.message}`);
+        });
+
 		wallet.on('accountsChanged', async (_newAccount, _oldAccount) => {
 			setCurrentAccount(_newAccount[0]);
 			getTokens(_newAccount[0]);
