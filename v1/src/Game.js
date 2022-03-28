@@ -310,7 +310,7 @@ export function OnlineGame() {
 
         const serverState = new Remote();
 
-        server.emit('getGameId', (id) => {
+        await server.emit('getGameId', (id) => {
             serverState.gameId = id;
             server.emit('fetchData', (data) => {
                 serverState.initialData = data;

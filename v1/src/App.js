@@ -8,8 +8,8 @@ import { ReferenceDataContext } from "./ReferenceDataContext";
 import socketIOClient from "socket.io-client";
 
 //SERVER URL
-const ENDPOINT = "https://bh-server-v1.herokuapp.com/";
-//const ENDPOINT = "http://localhost:4001";
+//const ENDPOINT = "https://bh-server-v1.herokuapp.com/";
+const ENDPOINT = "http://localhost:4001";
 
 // Web pages
 const RPCURL = "https://rpc.ankr.com/fantom";
@@ -73,8 +73,8 @@ function App() {
 		setCurrentAccount(_newAccount[0]);
 		getTokens(_newAccount[0]);
         server.emit('setWallet', _newAccount[0]);
-        server.emit('getGameId', (id) => {
-            setGameId(id);
+        await server.emit('getGameId', async(id) => {
+            setGameId(await id);
         })
 	}
 
@@ -118,12 +118,12 @@ function App() {
 		getTokens();
 	}, [])
 
-    const getMatches = (socket) => {
+    const getMatches = async (socket) => {
         socket.emit('getGameId', (id) => {
             setGameId(id);
         })
         socket.emit('fetchMatches', (matches) => {
-            setMatches(JSON.parse(matches));
+            setMatches(matches);
         });
     }
 
@@ -147,16 +147,18 @@ function App() {
 		}
 	}
 
-    const createLobby = () => {
-        server.emit('requestGame', (id) => {
-            server.emit('createGame', id);
-            setStatus(1);
+    const createLobby = async () => {
+        await server.emit('requestGame', async (id) => {
+            await server.emit('createGame', id, () => {
+                setStatus(1);
+            });
         })
     }
 
-    const joinLobby = (id) => {
-        server.emit('joinGame', id);
-        setStatus(1);
+    const joinLobby = async (id) => {
+        await server.emit('joinGame', id, () => {
+            setStatus(1);
+        });
     }
 
     const leaveLobby = (id) => {
