@@ -10,6 +10,7 @@ import socketIOClient from "socket.io-client";
 //SERVER URL
 //const ENDPOINT = "https://bh-server-v1.herokuapp.com/";
 const ENDPOINT = "http://localhost:4001";
+const HOST = "http://localhost";
 
 // Web pages
 const RPCURL = "https://rpc.ankr.com/fantom";
@@ -74,7 +75,7 @@ function App() {
 		getTokens(_newAccount[0]);
         server.emit('setWallet', _newAccount[0]);
         await server.emit('getGameId', async(id) => {
-            setGameId(await id);
+            setGameId(id);
         })
 	}
 
@@ -89,14 +90,14 @@ function App() {
           console.log(`connect_error due to ${err.message}`);
         });
 
-		wallet.on('accountsChanged', async (_newAccount, _oldAccount) => {
+        socket.on('createGame', () => {
+            getMatches(socket);
+        });
+
+        wallet.on('accountsChanged', async (_newAccount, _oldAccount) => {
 			setCurrentAccount(_newAccount[0]);
 			getTokens(_newAccount[0]);
 		});
-
-        socket.on('createGame', () => {
-            getMatches(socket);
-        })
 	}
 
 	const getTokens = async (account) => {
@@ -122,6 +123,7 @@ function App() {
         socket.emit('getGameId', (id) => {
             setGameId(id);
         })
+
         socket.emit('fetchMatches', (matches) => {
             setMatches(matches);
         });
@@ -156,14 +158,24 @@ function App() {
     }
 
     const joinLobby = async (id) => {
-        await server.emit('joinGame', id, () => {
-            setStatus(1);
+        server.emit('fetchGamePort', id, (port) => {
+            server.disconnect();
+            const matchServer = socketIOClient(HOST + ':' + port);
+            matchServer.emit('setWallet', currentAccount);
+            newServer(matchServer);
+            matchServer.emit('joinGame', id, () => {
+                setStatus(1);
+            });
         });
     }
 
     const leaveLobby = (id) => {
-        server.emit('leaveGame', id);
-        setGameId(null);
+        server.emit('leaveGame', id, () => {
+            server.emit('fetchMatches', (matches) => {
+                setMatches(matches);
+                setGameId(null);
+            });
+        });
     }
 
     const enterButtons = () => {
@@ -192,7 +204,7 @@ function App() {
             if (gameId) {
                 return <>You are Currently in a Game...</>
             }
-            return <>Join Rooms...</>
+            return <>{matches.length > 0 ? 'Join Rooms...' : ''}</>
         }
     }
 
