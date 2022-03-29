@@ -2,3 +2,4 @@ bin
 rename-tool
 pieces
 *.class
+*.spine

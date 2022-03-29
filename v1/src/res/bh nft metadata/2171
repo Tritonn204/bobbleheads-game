@@ -1,0 +1,62 @@
+{
+   "image": "https://incepthink.mypinata.cloud/ipfs/QmVK5UiVTthMqz3UsB3jp5AnEgf8wNDF8tfNQVvHgZJ3A4",
+   "external_url": "https://www.bobbleheadsnft.art",
+   "animation_url": "https://incepthink.mypinata.cloud/ipfs/QmVK5UiVTthMqz3UsB3jp5AnEgf8wNDF8tfNQVvHgZJ3A4",
+   "image_preview_url": "https://incepthink.mypinata.cloud/ipfs/QmVK5UiVTthMqz3UsB3jp5AnEgf8wNDF8tfNQVvHgZJ3A4",
+   "name": "Bobblehead #2171",
+   "description": "Bobbleheads is a generative NFT collection featuring 10,000 unique characters of 9 races. Each unique Bobblehead doubles up as your membership to the Bobblehead Club with special perks and benefits alongside the utility that will be unveiled in our roadmap. Visit: https://www.bobbleheadsnft.art/ for more details.",
+   "attributes": [
+      {
+         "value": "Human",
+         "trait_type": "Race"
+      },
+      {
+         "value": "Cold Pink",
+         "trait_type": "Background"
+      },
+      {
+         "value": "Crystal Ball",
+         "trait_type": "Left Item"
+      },
+      {
+         "value": "Menorah",
+         "trait_type": "Right Item"
+      },
+      {
+         "value": "Longsleeve Shirt",
+         "trait_type": "Top"
+      },
+      {
+         "value": "Shorts",
+         "trait_type": "Bottoms"
+      },
+      {
+         "value": "Powder Blue",
+         "trait_type": "Puck"
+      },
+      {
+         "value": "Closed",
+         "trait_type": "Eyes"
+      },
+      {
+         "value": "Eye Mask",
+         "trait_type": "Eye Accessory"
+      },
+      {
+         "value": "Drooling",
+         "trait_type": "Mouth"
+      },
+      {
+         "value": "Bed Hair",
+         "trait_type": "Hair"
+      },
+      {
+         "value": "Helicopter",
+         "trait_type": "Hat"
+      },
+      {
+         "value": "Airpods",
+         "trait_type": "Ear Accessory"
+      }
+   ]
+}

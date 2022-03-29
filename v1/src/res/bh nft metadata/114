@@ -1,0 +1,58 @@
+{
+   "image": "https://incepthink.mypinata.cloud/ipfs/QmRysWV5bbhiDhnnAwEut7mmPtFXP2n6q6TrvJDzsRDDBy",
+   "external_url": "https://www.bobbleheadsnft.art",
+   "animation_url": "https://incepthink.mypinata.cloud/ipfs/QmRysWV5bbhiDhnnAwEut7mmPtFXP2n6q6TrvJDzsRDDBy",
+   "image_preview_url": "https://incepthink.mypinata.cloud/ipfs/QmRysWV5bbhiDhnnAwEut7mmPtFXP2n6q6TrvJDzsRDDBy",
+   "name": "Bobblehead #114",
+   "description": "Bobbleheads is a generative NFT collection featuring 10,000 unique characters of 9 races. Each unique Bobblehead doubles up as your membership to the Bobblehead Club with special perks and benefits alongside the utility that will be unveiled in our roadmap. Visit: https://www.bobbleheadsnft.art/ for more details.",
+   "attributes": [
+      {
+         "value": "Shiba",
+         "trait_type": "Race"
+      },
+      {
+         "value": "Red",
+         "trait_type": "Background"
+      },
+      {
+         "value": "Glass of Scotch",
+         "trait_type": "Left Item"
+      },
+      {
+         "value": "Glass of Scotch",
+         "trait_type": "Right Item"
+      },
+      {
+         "value": "Jacket",
+         "trait_type": "Top"
+      },
+      {
+         "value": "Camo Pants",
+         "trait_type": "Bottoms"
+      },
+      {
+         "value": "Red",
+         "trait_type": "Puck"
+      },
+      {
+         "value": "Wide Open",
+         "trait_type": "Eyes"
+      },
+      {
+         "value": "Hipster Glasses",
+         "trait_type": "Eye Accessory"
+      },
+      {
+         "value": "Tongue Out",
+         "trait_type": "Mouth"
+      },
+      {
+         "value": "Gold Medal",
+         "trait_type": "Neck Accessory"
+      },
+      {
+         "value": "Helicopter",
+         "trait_type": "Hat"
+      }
+   ]
+}

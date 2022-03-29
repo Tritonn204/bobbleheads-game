@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@inlet/react-pixi": "^6.6.5",
+    "@pixi-spine/all-4.0": "^3.0.13",
     "@pixi/tilemap": "^3.2.2",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.3",

@@ -1,0 +1,58 @@
+{
+   "image": "https://incepthink.mypinata.cloud/ipfs/QmTjCuFtkxj7Z9c8e7ze7WPC9CPazcDS9c92fp8ztVHJjY",
+   "external_url": "https://www.bobbleheadsnft.art",
+   "animation_url": "https://incepthink.mypinata.cloud/ipfs/QmTjCuFtkxj7Z9c8e7ze7WPC9CPazcDS9c92fp8ztVHJjY",
+   "image_preview_url": "https://incepthink.mypinata.cloud/ipfs/QmTjCuFtkxj7Z9c8e7ze7WPC9CPazcDS9c92fp8ztVHJjY",
+   "name": "Bobblehead #5014",
+   "description": "Bobbleheads is a generative NFT collection featuring 10,000 unique characters of 9 races. Each unique Bobblehead doubles up as your membership to the Bobblehead Club with special perks and benefits alongside the utility that will be unveiled in our roadmap. Visit: https://www.bobbleheadsnft.art/ for more details.",
+   "attributes": [
+      {
+         "value": "Shiba",
+         "trait_type": "Race"
+      },
+      {
+         "value": "Cold Pink",
+         "trait_type": "Background"
+      },
+      {
+         "value": "Telescope",
+         "trait_type": "Left Item"
+      },
+      {
+         "value": "Toy Gun",
+         "trait_type": "Right Item"
+      },
+      {
+         "value": "Football Jersey",
+         "trait_type": "Top"
+      },
+      {
+         "value": "Track Pants",
+         "trait_type": "Bottoms"
+      },
+      {
+         "value": "Ice",
+         "trait_type": "Puck"
+      },
+      {
+         "value": "K.O",
+         "trait_type": "Eyes"
+      },
+      {
+         "value": "",
+         "trait_type": "Eye Accessory"
+      },
+      {
+         "value": "Tongue Out",
+         "trait_type": "Mouth"
+      },
+      {
+         "value": "Bowtie",
+         "trait_type": "Neck Accessory"
+      },
+      {
+         "value": "Tinfoil Hat",
+         "trait_type": "Hat"
+      }
+   ]
+}
