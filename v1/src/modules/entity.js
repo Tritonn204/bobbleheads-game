@@ -23,8 +23,7 @@ export class Entity {
         this.bounds = new physics.BoundingBox(this.pos, new Vec2(width, height), new Vec2(0,0));
         this.attackBounds = new physics.BoundingBox(new Vec2(-width,-height), new Vec2(width*1.25, height), new Vec2(width*1.25,0));
 
-        this.hpBar = PIXI.Sprite.from(PIXI.Texture.WHITE);
-        this.hpFill= PIXI.Sprite.from(PIXI.Texture.WHITE);
+        this.hitBox = PIXI.Sprite.from(PIXI.Texture.WHITE);
 
         this.width = width;
         this.height = height;
@@ -68,6 +67,7 @@ export class Entity {
         this.bounds.pos = this.pos;
         this.hurtTime += delta;
 
+        this.attackBounds.pos.set(-1000,0);
         this.traits.forEach(trait => {
             trait.update(this, delta);
         });
@@ -127,7 +127,7 @@ export class Entity {
     }
 
     draw() {
-        
+
     }
 
     getImpactVelocity() {

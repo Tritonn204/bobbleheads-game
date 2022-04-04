@@ -6,6 +6,9 @@ const W = 87;
 const A = 65;
 const S = 83;
 const D = 68;
+
+const Q = 81;
+
 const RIGHT = 39;
 const LEFT = 37;
 const DOWN = 40;
@@ -13,7 +16,7 @@ const UP = 38;
 
 export function bindKeys(player, keyboard, window) {
     keyboard.addMapping(W, keyState => {
-        if (keyState && player.isGrounded && player.vel.y < physics.jumpTolerance) {
+        if (keyState) {
             player.jump.start();
             player.isGrounded = false;
         } else {
@@ -72,7 +75,7 @@ export function bindKeysServer(player, keyboard, window, socket) {
         // }
     });
 
-    keyboard.addMapping(SPACE, keyState => {
+    keyboard.addMapping(Q, keyState => {
         if (keyState) {
             player.pos.set(player.spawnPoint.x,player.spawnPoint.y);
             player.vel.set(0,0);
@@ -81,7 +84,7 @@ export function bindKeysServer(player, keyboard, window, socket) {
     });
 
     keyboard.addMapping(DOWN, keyState => {
-        if (keyState == 1) {
+        if (keyState == keyboard.STATES.PRESSED) {
             player.crouching = true;
         } else {
             player.crouching = false;
@@ -91,13 +94,24 @@ export function bindKeysServer(player, keyboard, window, socket) {
 
     keyboard.addMapping(D, keyState => {
         if (keyState) {
-            player.punch.advance();
+            if (player.run.dir != 0) {
+                player.dashAttack.start(player.run.dir);
+                socket.emit('dashAttack', keyState);
+            } else if (keyboard.keyStates.get(UP) == keyboard.STATES.PRESSED) {
+                player.risingAttack.start();
+                socket.emit('risingAttack', keyState);
+            } else if (keyboard.keyStates.get(DOWN) == keyboard.STATES.PRESSED) {
+                player.fallingAttack.start();
+                socket.emit('fallingAttack', keyState);
+            } else {
+                player.punch.advance();
+                socket.emit('punch', keyState);
+            }
         }
-        socket.emit('punch', keyState);
     });
 
     keyboard.addMapping(S, keyState => {
-        if (keyState == 1) {
+        if (keyState == keyboard.STATES.PRESSED) {
             player.guard = true;
         } else {
             player.guard = false;

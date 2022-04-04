@@ -11,6 +11,7 @@ export const bobbleheadMix = (skeleton) => {
     setMixAll(skeleton, "Walk Guard", 0.15);
     setMixAll(skeleton, "Hurt A", 0.15);
     setMixAll(skeleton, "Hurt B", 0.15);
+    setMixAll(skeleton, "Rising Attack", 0.4);
 }
 
 export const setMixAll = (skeleton, name, value) => {

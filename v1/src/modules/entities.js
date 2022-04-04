@@ -1,5 +1,5 @@
 import { Entity } from './entity.js';
-import { Velocity, Jump, Run, Punch, HPBar } from './gameTraits.js';
+import { Velocity, Jump, Run, Punch, HPBar, RisingAttack, FallingAttack, HitBoxDebug, DashAttack } from './gameTraits.js';
 import { Spine } from 'pixi-spine';
 import { loadPlayer } from './assets.js';
 
@@ -23,11 +23,16 @@ export function createChar(index, id, socket, isClient, serverState) {
         char.addTrait(new Velocity());
         char.addTrait(new Jump());
         char.addTrait(new Run());
+        char.addTrait(new RisingAttack());
+        char.addTrait(new FallingAttack());
         char.addTrait(new Punch());
         char.addTrait(new HPBar());
+        char.addTrait(new HitBoxDebug());
+        char.addTrait(new DashAttack());
 
         char.render = (cam) => {
             char.hpBar.render(char, cam);
+            char.hitBoxDebug.render(char, cam);
             return tileUtil.drawSpine(char, 'Idle Left', cam, char.pos.x, char.pos.y);
         }
 
@@ -36,6 +41,8 @@ export function createChar(index, id, socket, isClient, serverState) {
             char.container.addChild(char.hpBar.hpBorder);
             char.container.addChild(char.hpBar.hpBar);
             char.container.addChild(char.hpBar.hpFill);
+
+            char.container.addChild(char.hitBoxDebug.rect);
         }
 
         char.animate = () => {
@@ -57,6 +64,48 @@ export function createChar(index, id, socket, isClient, serverState) {
                         });
                     }
                     return;
+                }
+                if (char.dashAttack) {
+                    if (char.dashAttack.active) {
+                        const anim = "Air Dash Attack";
+                        if (playing != anim) {
+                            char.skeleton.state.setAnimation(0,anim,false);
+                            char.currentAnimation = anim;
+                            socket.emit('animation', {
+                                name: anim,
+                                loop: false
+                            });
+                        }
+                        return;
+                    }
+                }
+                if (char.risingAttack) {
+                    if (char.risingAttack.active) {
+                        const anim = "Rising Attack";
+                        if (playing != anim) {
+                            char.skeleton.state.setAnimation(0,anim,false);
+                            char.currentAnimation = anim;
+                            socket.emit('animation', {
+                                name: anim,
+                                loop: false
+                            });
+                        }
+                        return;
+                    }
+                }
+                if (char.fallingAttack) {
+                    if (char.fallingAttack.active) {
+                        const anim = "Falling Attack";
+                        if (playing != anim) {
+                            char.skeleton.state.setAnimation(0,anim,false);
+                            char.currentAnimation = anim;
+                            socket.emit('animation', {
+                                name: anim,
+                                loop: false
+                            });
+                        }
+                        return;
+                    }
                 }
                 if (char.punch) {
                     if (char.punch.active) {

@@ -1,9 +1,13 @@
 //Key state constants
-const PRESSED = 1;
-const RELEASED = 0;
+const STATES = {
+    PRESSED: 1,
+    RELEASED: 0
+}
 
 export class Keyboard {
     constructor() {
+        this.STATES = STATES;
+
         // Stores the current state of any key
         this.keyStates = new Map();
 
@@ -24,7 +28,7 @@ export class Keyboard {
 
         e.preventDefault();
 
-        const keyState = e.type === 'keydown' ? PRESSED : RELEASED;
+        const keyState = e.type === 'keydown' ? this.STATES.PRESSED : this.STATES.RELEASED;
 
         if (this.keyStates.get(keyCode) === keyState) {
             return;
