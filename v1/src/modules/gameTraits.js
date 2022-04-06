@@ -50,6 +50,7 @@ export class HitBoxDebug extends Trait {
     constructor() {
         super('hitBoxDebug')
         this.rect = PIXI.Sprite.from(PIXI.Texture.WHITE);
+        this.rect.visible = false;
     }
 
     render(entity, cam) {

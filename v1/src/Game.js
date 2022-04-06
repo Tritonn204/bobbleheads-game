@@ -212,6 +212,41 @@ export function OnlineGame() {
         }
     }
 
+    const genFounder = async (spine) => {
+        const newSkin = new Skin("combined-skin");
+
+        newSkin.addSkin(spine.spineData.findSkin("default"));
+
+        const race = 15;
+        const eyes = 9;
+        const mouth = 0;
+        const pants = 2;
+        const handL = 1;
+        const handR = 1;
+        const hair = 10;
+
+        newSkin.addSkin(spine.spineData.findSkin(`head/head-${race}`));
+        newSkin.addSkin(spine.spineData.findSkin(`body/body-${race}`));
+
+        newSkin.addSkin(spine.spineData.findSkin(`left-arm/left-arm-${race}-${handL}`));
+        newSkin.addSkin(spine.spineData.findSkin(`right-arm/right-arm-${race}-${handR}`));
+
+        newSkin.addSkin(spine.spineData.findSkin(`left-legs/left-legs-${race}`));
+        newSkin.addSkin(spine.spineData.findSkin(`right-legs/right-legs-${race}`));
+
+        newSkin.addSkin(spine.spineData.findSkin(`eyes/eyes-${race}-${eyes}`));
+
+        newSkin.addSkin(spine.spineData.findSkin(`mouth/mouth-${race}-${mouth}`));
+
+        newSkin.addSkin(spine.spineData.findSkin(`hair/hair-${hair}`));
+
+        newSkin.addSkin(spine.spineData.findSkin(`left-pants/left-pants-${pants}`));
+        newSkin.addSkin(spine.spineData.findSkin(`right-pants/right-pants-${pants}`));
+
+        spine.skeleton.setSkin(newSkin);
+        spine.skeleton.setSlotsToSetupPose();
+    }
+
     const genSkin = async (spine, tokenID) => {
         const newSkin = new Skin("combined-skin");
 
@@ -408,8 +443,10 @@ export function OnlineGame() {
 
                 preLoader.load((loader, resources) => {
                     const bh = Object.assign(Object.create(BS), BS);
-                    genSkin(bh, Math.floor(Math.random()*10000)+1);
+                    //genSkin(bh, Math.floor(Math.random()*10000)+1);
                     //const dummy = createSkeleton(app, resources);
+
+                    genFounder(bh);
                     animationManager.bobbleheadMix(bh);
                     //animationManager.bobbleheadMix(dummy);
 

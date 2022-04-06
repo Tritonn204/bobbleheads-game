@@ -77,6 +77,13 @@ export class Level {
         this.entityCollision.entities.add(entity);
     }
 
+    getDistance(A, B) {
+        const a = A.x - B.x;
+        const b = A.y - B.y;
+
+        return Math.hypot(a,b);
+    }
+
     update(delta, serverState) {
         this.clientSnapTimer += delta;
         this.entities.forEach((entity) => {
@@ -90,7 +97,14 @@ export class Level {
 
                 //interpolate between the client position and the server position based on how much time has passed
                 const lerpFactor = Math.min(1,(Date.now() - serverState.lastUpdate)/(delta*1000)*0.125);
-                entity.pos.lerp(remotePlayer.pos, lerpFactor);
+
+                const distance = this.getDistance(entity.pos, remotePlayer.pos);
+
+                if (distance < 600){
+                    entity.pos.lerp(remotePlayer.pos, lerpFactor);
+                }   else {
+                    entity.pos.set(remotePlayer.pos.x, remotePlayer.pos.y);
+                }
 
                 //Make sure other players face the proper direction
                 entity.facing = remotePlayer.facing;
