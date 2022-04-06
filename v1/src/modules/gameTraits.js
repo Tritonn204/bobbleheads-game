@@ -56,7 +56,7 @@ export class HitBoxDebug extends Trait {
     render(entity, cam) {
         this.rect.width = entity.attackBounds.size.x*cam.scale;
         this.rect.height = entity.attackBounds.size.y*cam.scale;
-        this.rect.x = (entity.attackBounds.left- cam.pos.x)*cam.scale;
+        this.rect.x = -1000;
         this.rect.y = (entity.attackBounds.top - cam.pos.y)*cam.scale;
     }
 
