@@ -226,7 +226,7 @@ function App() {
             case 1:
                 return(
                     <div className='game'>
-                        <OnlineGame />
+                        <OnlineGame /> //asd
                     </div>
                 )
                 break;
