@@ -18,7 +18,7 @@ const UP = 38;
 
 export function bindKeysClient(keyboard, gameState) {
     keyboard.addMapping(LTAB, keyState => {
-        
+
     });
 }
 
@@ -35,8 +35,8 @@ export function bindKeysServer(player, keyboard, window, socket) {
 
     keyboard.addMapping(Q, keyState => {
         if (keyState) {
-            player.pos.set(player.spawnPoint.x,player.spawnPoint.y);
-            player.vel.set(0,0);
+            //player.pos.set(player.spawnPoint.x,player.spawnPoint.y);
+            //player.vel.set(0,0);
         }
         socket.emit('respawn', keyState);
     });

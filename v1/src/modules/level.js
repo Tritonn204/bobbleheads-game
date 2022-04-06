@@ -100,7 +100,7 @@ export class Level {
 
                 const distance = this.getDistance(entity.pos, remotePlayer.pos);
 
-                if (distance < 600){
+                if (distance < 500){
                     entity.pos.lerp(remotePlayer.pos, lerpFactor);
                 }   else {
                     entity.pos.set(remotePlayer.pos.x, remotePlayer.pos.y);

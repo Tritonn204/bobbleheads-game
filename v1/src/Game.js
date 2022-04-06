@@ -201,8 +201,7 @@ export function OnlineGame() {
 
             spineData = spineJsonParser.readSkeletonData(rawSkeletonData);
 
-            let res = new Spine(spineData);
-            return res;
+            return spineData;
     });
 
     const scanTrait = (uri, name) => {
@@ -326,7 +325,7 @@ export function OnlineGame() {
         server.on('addPlayer', data => {
             if (!serverState.players[data.id]) {
                 createChar(data.skeleton, data.id, socket, false, serverState).then((player) => {
-                    newPlayer(skeleton, level, player);
+                    newPlayer(skeleton, container, level, player);
                     serverState.players[data.id] = player;
                 });
             }
@@ -374,7 +373,7 @@ export function OnlineGame() {
                 if (!serverState.players[key]) {
                     serverState.players[key] = {};
                     createChar(userData.skeleton, key, server, false, serverState).then((player) => {
-                        newPlayer(baseSkeleton, container, level, player);
+                        newPlayer(skeleton, container, level, player, serverState);
                         player.pos.set(userData.pos.x, userData.pos.y)
                         player.hp = userData.hp;
                         player.facing = userData.facing;
@@ -385,10 +384,14 @@ export function OnlineGame() {
         });
     }
 
-    const newPlayer = (skeleton, container, level, player) => {
-        const bh = Object.assign(new Spine(), skeleton);
-        animationManager.bobbleheadMix(bh);
-        player.skeleton = bh;
+    const newPlayer = async (BS, container, level, player, serverState) => {
+        const BH =  new Spine(BS);
+        //genSkin(bh, Math.floor(Math.random()*10000)+1);
+
+        genFounder(BH);
+        animationManager.bobbleheadMix(BH);
+
+        player.skeleton = BH;
 
         container.addChild(player.container);
         player.draw();
@@ -442,7 +445,7 @@ export function OnlineGame() {
                 document.body.appendChild(app.view);
 
                 preLoader.load((loader, resources) => {
-                    const bh = Object.assign(Object.create(BS), BS);
+                    const bh = new Spine(BS);
                     //genSkin(bh, Math.floor(Math.random()*10000)+1);
                     //const dummy = createSkeleton(app, resources);
 
@@ -482,7 +485,7 @@ export function OnlineGame() {
 
                         map.addInteractiveEntity(char);
                         //map.addInteractiveEntity(prop);
-                        checkForPlayers(baseSkeleton, entityLayer, char, map, server, serverState);
+                        checkForPlayers(BS, entityLayer, char, map, server, serverState);
 
                         //Define the game loop update/render logic
                         const update = (time) => {
