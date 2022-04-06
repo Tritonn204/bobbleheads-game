@@ -8,9 +8,9 @@ import { ReferenceDataContext } from "./ReferenceDataContext";
 import socketIOClient from "socket.io-client";
 
 //SERVER URL
-const ENDPOINT = "http://167.172.157.77:8080";
+const ENDPOINT = "https://ca.bobbleheadsservers.live";
 //const ENDPOINT = "http://localhost:4001";
-const HOST = "http://167.172.157.77";
+const HOST = "https://ca.bobbleheadsservers.live";
 //const HOST = "http://localhost:"
 
 // Web pages
@@ -161,7 +161,7 @@ function App() {
     const joinLobby = async (id) => {
         server.emit('fetchGamePort', id, (port) => {
             server.disconnect();
-            const matchServer = socketIOClient(HOST + ':' + port);
+            const matchServer = socketIOClient(ENDPOINT, {path: '/' + port});
             matchServer.emit('setWallet', currentAccount);
             newServer(matchServer);
             matchServer.emit('joinGame', id, () => {
