@@ -10,7 +10,7 @@ import socketIOClient from "socket.io-client";
 //SERVER URL
 const ENDPOINT = "https://bobbleheads-server-dj54i.ondigitalocean.app";
 //const ENDPOINT = "http://localhost:4001";
-const HOST = "http://localhost";
+const HOST = "https://bobbleheads-server-dj54i.ondigitalocean.app";
 
 // Web pages
 const RPCURL = "https://rpc.ankr.com/fantom";
