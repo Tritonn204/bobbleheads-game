@@ -8,9 +8,9 @@ import { ReferenceDataContext } from "./ReferenceDataContext";
 import socketIOClient from "socket.io-client";
 
 //SERVER URL
-//const ENDPOINT = "https://bh-server-v1.herokuapp.com/";
-const ENDPOINT = "http://localhost:4001";
-const HOST = "http://localhost";
+const ENDPOINT = "https://bobbleheads-server-dj54i.ondigitalocean.app:4001";
+//const ENDPOINT = "http://localhost:4001";
+const HOST = "https://bobbleheads-server-dj54i.ondigitalocean.app";
 
 // Web pages
 const RPCURL = "https://rpc.ankr.com/fantom";
