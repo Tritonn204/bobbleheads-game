@@ -11,6 +11,7 @@ import socketIOClient from "socket.io-client";
 const ENDPOINT = "https://bobbleheads-server-dj54i.ondigitalocean.app";
 //const ENDPOINT = "http://localhost:4001";
 const HOST = "https://bobbleheads-server-dj54i.ondigitalocean.app";
+//const HOST = "http://localhost:"
 
 // Web pages
 const RPCURL = "https://rpc.ankr.com/fantom";
@@ -226,7 +227,7 @@ function App() {
             case 1:
                 return(
                     <div className='game'>
-                        <OnlineGame /> //asd
+                        <OnlineGame />
                     </div>
                 )
                 break;
