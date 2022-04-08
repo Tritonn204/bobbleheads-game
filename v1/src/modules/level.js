@@ -80,16 +80,15 @@ export class Level {
     update(delta, serverState) {
         this.clientSnapTimer += delta;
         this.entities.forEach((entity) => {
-
-            //
             if(serverState.remoteData && serverState.remoteData[entity.id]){
                 //Grab most up to date player data
                 const remotePlayer = serverState.remoteData[entity.id];
                 //Snap velocity vectors to server-side values
-                entity.vel.set(remotePlayer.vel.x, remotePlayer.vel.y);
+                var lerpFactor = Math.min(1,(Date.now() - serverState.lastUpdate)/(delta*1000));
+                entity.vel.lerp(remotePlayer.vel, lerpFactor);
 
                 //interpolate between the client position and the server position based on how much time has passed
-                const lerpFactor = Math.min(1,(Date.now() - serverState.lastUpdate)/(delta*1000)*0.125);
+                lerpFactor = Math.min(1,(Date.now() - serverState.lastUpdate)/(delta*1000)*0.125);
                 entity.pos.lerp(remotePlayer.pos, lerpFactor);
 
                 //Make sure other players face the proper direction
