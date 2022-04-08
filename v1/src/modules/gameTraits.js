@@ -50,12 +50,13 @@ export class HitBoxDebug extends Trait {
     constructor() {
         super('hitBoxDebug')
         this.rect = PIXI.Sprite.from(PIXI.Texture.WHITE);
+        this.rect.visible = false;
     }
 
     render(entity, cam) {
         this.rect.width = entity.attackBounds.size.x*cam.scale;
         this.rect.height = entity.attackBounds.size.y*cam.scale;
-        this.rect.x = (entity.attackBounds.left- cam.pos.x)*cam.scale;
+        this.rect.x = -1000;
         this.rect.y = (entity.attackBounds.top - cam.pos.y)*cam.scale;
     }
 
