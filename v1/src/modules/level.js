@@ -108,9 +108,9 @@ export class Level {
                 }
 
                 entity.update(delta, serverState);
-                entity.pos.x += entity.vel.x;
+                entity.pos.x += entity.vel.x*delta;
                 this.tileCollision.checkX(entity);
-                entity.vel.y += entity.vel.y;
+                entity.vel.y += entity.vel.y*delta;
                 this.tileCollision.checkY(entity);
             }
         });
