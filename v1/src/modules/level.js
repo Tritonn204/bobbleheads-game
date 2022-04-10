@@ -1,5 +1,5 @@
 import Compositor from '../Compositor.js';
-import { Matrix } from './util.js';
+import { Matrix, getDistance, calcSpeed, lerp } from './util.js';
 import { TileCollider, EntityCollider } from './physics.js';
 import * as PIXI from "pixi.js";
 
@@ -22,8 +22,6 @@ export class Level {
         this.yCount = 1;
         this.width = 0;
         this.height = 0;
-
-        this.clientSnapTimer = 0;
 
         this.entityCollision = new EntityCollider(this.entities);
         this.tileCollision = new TileCollider(this.collisionData);
@@ -77,45 +75,44 @@ export class Level {
         this.entityCollision.entities.add(entity);
     }
 
-    getDistance(A, B) {
-        const a = A.x - B.x;
-        const b = A.y - B.y;
+    update(delta, serverState, clock) {
+        if (!serverState.remoteData) return;
 
-        return Math.hypot(a,b);
-    }
+        const remoteDelta = (clock - serverState.lastUpdate);
+        const nextUpdate = serverState.lastUpdate + 200;
 
-    update(delta, serverState) {
-        this.clientSnapTimer += delta;
         this.entities.forEach((entity) => {
-            if(serverState.remoteData && serverState.remoteData[entity.id]){
+            if(serverState.remoteData && serverState.remoteData[entity.id] && serverState.oldData && serverState.oldData[entity.id]){
                 //Grab most up to date player data
                 const remotePlayer = serverState.remoteData[entity.id];
-                //Snap velocity vectors to server-side values
-                var lerpFactor = Math.min(1,(Date.now() - serverState.lastUpdate)/(delta*1000));
-                entity.vel.lerp(remotePlayer.vel, lerpFactor);
+                const remotePlayerOld = serverState.oldData[entity.id];
+                //predict entity movement for a visibly smoother client, avoid jitters/snaps
+
+                const lerpFactor = (clock-serverState.lastUpdate)/(200);
 
                 //interpolate between the client position and the server position based on how much time has passed
-                const lerpFactor = Math.min(1,(Date.now() - serverState.lastUpdate)/(delta*1000)*0.125);
+                //distance = getDistance(entity.pos, remotePlayer.pos);
 
-                const distance = this.getDistance(entity.pos, remotePlayer.pos);
+                entity.vel.set(remotePlayer.vel.x, remotePlayer.vel.y);
 
-                if (distance < 500){
-                    entity.pos.lerp(remotePlayer.pos, lerpFactor);
-                }   else {
-                    entity.pos.set(remotePlayer.pos.x, remotePlayer.pos.y);
-                }
+                entity.pos.x = lerp(remotePlayerOld.pos.x, remotePlayer.pos.x, lerpFactor);
+                entity.pos.y = lerp(remotePlayerOld.pos.y, remotePlayer.pos.y, lerpFactor);
 
-                //Make sure other players face the proper direction
-                entity.facing = remotePlayer.facing;
                 entity.isGrounded = remotePlayer.grounded;
                 entity.hurtTime = remotePlayer.hurtTime;
                 entity.hitSource = remotePlayer.hitSource;
-            }
 
-            //predict entity movement for a visibly smoother client, avoid jitters/snaps
-            entity.update(delta, serverState);
-            entity.pos.x += entity.vel.x*delta
-            entity.pos.y += entity.vel.y*delta;
+                //Make sure other players face the proper direction
+                if (entity.id != serverState.clientWallet) {
+                    entity.facing = remotePlayer.facing;
+                }
+
+                entity.update(delta, serverState);
+                entity.pos.x += entity.vel.x;
+                this.tileCollision.checkX(entity);
+                entity.vel.y += entity.vel.y;
+                this.tileCollision.checkY(entity);
+            }
         });
     }
 

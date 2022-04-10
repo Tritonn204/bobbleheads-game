@@ -365,16 +365,19 @@ export function OnlineGame() {
         })
 
         server.on('remoteData', data => {
+            if (serverState.remoteData != {}) serverState.oldData = serverState.remoteData;
             serverState.remoteData = data;
-            serverState.lastUpdate = Date.now();
-            Object.entries(serverState.remoteData).forEach((item) => {
+
+            Object.entries(serverState.remoteData).forEach((item, index) => {
+                if (index == 0) serverState.lastUpdate = item[1].timestamp;
                 const key = item[0];
                 const userData = item[1];
+                //if (serverState.predictions[key] && serverState.predictions[key].pos) console.log(serverState.predictions[key].pos, userData.pos);
+                //serverState.predictions[key] = {pos: {x: userData.pos.x, y: userData.pos.y}}
                 if (!serverState.players[key]) {
-                    serverState.players[key] = {};
                     createChar(userData.skeleton, key, server, false, serverState).then((player) => {
                         newPlayer(skeleton, container, level, player, serverState);
-                        player.pos.set(userData.pos.x, userData.pos.y)
+                        player.pos.set(userData.pos.x, userData.pos.y);
                         player.hp = userData.hp;
                         player.facing = userData.facing;
                         serverState.players[key] = player;
@@ -400,12 +403,13 @@ export function OnlineGame() {
         level.addInteractiveEntity(player);
     }
 
-    const beginPing = (stats) => {
+    const beginPing = (stats, serverState) => {
         setInterval(() => {
             const start = Date.now();
             // volatile, so the packet will be discarded if the socket is not connected
             server.volatile.emit("ping", () => {
                 const PING = Date.now() - start;
+                serverState.ping = PING;
                 stats.latency.text = 'PING: ' + PING + 'ms';
             });
         }, 2500);
@@ -429,11 +433,13 @@ export function OnlineGame() {
             serverState.gameId = id;
             server.emit('fetchData', (data) => {
                 serverState.initialData = data;
+                serverState.clientWallet = currentAccount.toLowerCase();
+
                 const worldLayer = new PIXI.Container();
                 const entityLayer = new PIXI.Container();
 
                 const statsHud = new PerformanceOverlay(serverState.gameId);
-                beginPing(statsHud);
+                beginPing(statsHud, serverState);
 
                 app.stage.addChild(worldLayer);
                 app.stage.addChild(entityLayer);
@@ -473,6 +479,8 @@ export function OnlineGame() {
                         let accumulatedTime = 0;
                         let delta = 1/60;
 
+                        let clock = 0;
+
                         //Defines keybinds
                         bindKeysServer(char,input,window, server);
 
@@ -497,7 +505,13 @@ export function OnlineGame() {
                             accumulatedTime += (time - lastTime)/1000;
                             lastTime = time;
 
+                            if (clock == 0 && serverState.lastUpdate != 0) {
+                                clock = serverState.lastUpdate;
+                            }
+
                             while (accumulatedTime > delta) {
+                                if (clock != 0) clock += delta*1000;
+
                                 const SCALE = getScale();
                                 c.setSize(
                                     window.innerWidth/SCALE,
@@ -505,7 +519,7 @@ export function OnlineGame() {
                                     SCALE
                                 );
                                 c.update(char, map, delta);
-                                map.update(delta, serverState);
+                                map.update(delta, serverState, clock);
                                 accumulatedTime -= delta;
                             }
                             gameLoop.current = requestAnimationFrame(update);

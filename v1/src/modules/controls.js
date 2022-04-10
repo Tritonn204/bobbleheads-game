@@ -25,12 +25,12 @@ export function bindKeysClient(keyboard, gameState) {
 export function bindKeysServer(player, keyboard, window, socket) {
     keyboard.addMapping(UP, keyState => {
         socket.emit('jump', keyState);
-        // if (keyState && player.isGrounded && player.vel.y < physics.jumpTolerance) {
-        //     player.jump.start();
-        //     player.isGrounded = false;
-        // } else {
-        //     player.jump.cancel();
-        // }
+        if (keyState) {
+            player.jump.start();
+            player.isGrounded = false;
+        } else {
+            player.jump.cancel();
+        }
     });
 
     keyboard.addMapping(Q, keyState => {

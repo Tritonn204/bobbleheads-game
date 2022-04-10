@@ -195,6 +195,11 @@ export class FallingAttack extends Trait {
 
         this.width = 70;
         this.height = 70;
+
+        this.fallSpeed = 96;
+        this.dashSpeed = 300;
+        this.hoverX = 96;
+        this.kickSpeed = 800;
     }
 
     start() {
@@ -215,12 +220,27 @@ export class FallingAttack extends Trait {
             entity.attackBounds.pos.set(entity.pos.x - factorX, entity.pos.y + entity.height);
             entity.attackBounds.size.set(this.width, this.height);
             entity.attackBounds.offset.set(this.insetX*entity.facing, this.insetY);
+
+            entity.attackType = 'fallingAttack';
         }
     }
+
+    dashVel(entity) {
+        if (this.engageTime < this.duration - this.delay && this.engageTime > 0){
+            const factor = 1-((this.duration - this.engageTime)/this.duration);
+            entity.vel.x = this.dashSpeed*entity.facing*factor;
+            entity.vel.y = Math.max(this.kickSpeed, entity.vel.y);
+        } else if (this.engageTime >= this.duration - this.delay){
+            entity.vel.x = Math.min(Math.abs(entity.vel.x), this.hoverX)*entity.facing;
+            entity.vel.y = Math.min(entity.vel.y, this.fallSpeed);
+        }
+    }
+
 
     update(entity, delta) {
         if (this.engageTime > 0) {
             this.hitbox(entity);
+            this.dashVel(entity);
             this.engageTime -= delta;
         } else {
             this.active = false;
@@ -250,11 +270,15 @@ export class DashAttack extends Trait {
 
         this.insetX = 85;
         this.insetY = 8;
+
+        this.fallSpeed = 96;
+        this.dashSpeed = 600;
+        this.hoverX = 96;
     }
 
     start(dir) {
         if (!this.active) {
-            this.dir = dir;
+            this.dir = dir.valueOf();
             this.engageTime = this.duration;
             this.active = true;
         }
@@ -266,11 +290,23 @@ export class DashAttack extends Trait {
             entity.attackBounds.pos.set(entity.pos.x - factorX, entity.pos.y);
             entity.attackBounds.size.set(this.width, this.height);
             entity.attackBounds.offset.set(this.insetX*entity.facing, this.insetY);
+
+            entity.attackType = 'dashAttack';
+        }
+    }
+
+    dashVel(entity) {
+        entity.vel.y = Math.min(entity.vel.y, this.fallSpeed);
+        if (this.engageTime < this.duration - this.delay && this.engageTime > this.duration - this.delay - this.hitWindow){
+            entity.vel.x = this.dashSpeed*this.dir;
+        } else if (this.engageTime >= this.duration - this.delay){
+            entity.vel.x = Math.min(Math.abs(entity.vel.x), this.hoverX)*entity.facing;
         }
     }
 
     update(entity, delta) {
         if (this.engageTime > 0) {
+            this.dashVel(entity);
             this.hitbox(entity);
             this.engageTime -= delta;
         } else {
@@ -302,6 +338,9 @@ export class RisingAttack extends Trait {
 
         this.hitsLeft = 1;
         this.maxHits = 1;
+
+        this.fallSpeed = 0;
+        this.dashSpeed = 700;
     }
 
     start() {
@@ -318,12 +357,22 @@ export class RisingAttack extends Trait {
             entity.attackBounds.pos.set(entity.pos.x - factorX, entity.pos.y);
             entity.attackBounds.size.set(this.width, this.height);
             entity.attackBounds.offset.set(this.insetX*entity.facing, this.insetY);
+
+            entity.attackType = 'risingAttack';
+        }
+    }
+
+    dashVel(entity) {
+        entity.vel.y = Math.min(entity.vel.y, this.fallSpeed);
+        if (this.engageTime < this.duration - this.delay && this.engageTime > this.duration - this.delay - this.hitWindow){
+            entity.vel.y = Math.min(entity.vel.y, -this.dashSpeed);
         }
     }
 
     update(entity, delta) {
         if (this.engageTime > 0) {
             this.hitbox(entity);
+            this.dashVel(entity);
             this.engageTime -= delta;
         } else {
             this.active = false;
@@ -333,6 +382,7 @@ export class RisingAttack extends Trait {
         }
     }
 }
+
 
 export class Jump extends Trait {
     constructor() {
@@ -346,7 +396,7 @@ export class Jump extends Trait {
         this.engageTime = 0;
     }
 
-    start(entity) {
+    start() {
         if (this.jumpsLeft > 0) {
             this.engageTime = this.duration;
             this.jumpsLeft--;
