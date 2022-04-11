@@ -78,25 +78,40 @@ export class Level {
     update(delta, serverState, clock) {
         if (!serverState.remoteData) return;
 
-        const remoteDelta = (clock - serverState.lastUpdate);
-        const nextUpdate = serverState.lastUpdate + 200;
+        const nextUpdate = serverState.lastUpdate + 20;
+        const remoteDelta = (clock - nextUpdate);
 
         this.entities.forEach((entity) => {
             if(serverState.remoteData && serverState.remoteData[entity.id] && serverState.oldData && serverState.oldData[entity.id]){
                 //Grab most up to date player data
                 const remotePlayer = serverState.remoteData[entity.id];
                 const remotePlayerOld = serverState.oldData[entity.id];
-                //predict entity movement for a visibly smoother client, avoid jitters/snaps
 
                 const lerpFactor = (clock-serverState.lastUpdate)/(200);
 
+                const dest = {
+                    x:lerp(remotePlayerOld.pos.x, remotePlayer.pos.x, lerpFactor),
+                    y:lerp(remotePlayerOld.pos.y, remotePlayer.pos.y, lerpFactor)
+                }
+                const newvel = {
+                    x:lerp(remotePlayerOld.vel.x, remotePlayer.vel.x, lerpFactor),
+                    y:lerp(remotePlayerOld.vel.y, remotePlayer.vel.y, lerpFactor)
+                }
+                entity.pos.lerp(dest,delta*0.22);
+                entity.vel.lerp(remotePlayer.vel,delta*0.22);
+
                 //interpolate between the client position and the server position based on how much time has passed
-                //distance = getDistance(entity.pos, remotePlayer.pos);
+                entity.update(delta, serverState);
+                entity.vel.y += physics.gravity*delta;
 
-                entity.vel.set(remotePlayer.vel.x, remotePlayer.vel.y);
+                if (entity.vel.y > physics.terminalVelocity)
+                    entity.vel.y = physics.terminalVelocity;
 
-                entity.pos.x = lerp(remotePlayerOld.pos.x, remotePlayer.pos.x, lerpFactor);
-                entity.pos.y = lerp(remotePlayerOld.pos.y, remotePlayer.pos.y, lerpFactor);
+                //predict entity movement for a visibly smoother client, avoid jitters/snaps
+                entity.pos.x += entity.vel.x*delta;
+                this.tileCollision.checkX(entity);
+                entity.pos.y += entity.vel.y*delta;
+                this.tileCollision.checkY(entity);
 
                 entity.isGrounded = remotePlayer.grounded;
                 entity.hurtTime = remotePlayer.hurtTime;
@@ -106,12 +121,6 @@ export class Level {
                 if (entity.id != serverState.clientWallet) {
                     entity.facing = remotePlayer.facing;
                 }
-
-                entity.update(delta, serverState);
-                entity.pos.x += entity.vel.x*delta;
-                this.tileCollision.checkX(entity);
-                entity.vel.y += entity.vel.y*delta;
-                this.tileCollision.checkY(entity);
             }
         });
     }

@@ -47,7 +47,7 @@ export function createChar(index, id, socket, isClient, serverState) {
 
         char.animate = () => {
             if (isClient) {
-                const movementX = Math.abs(char.vel.x);
+                const movementX = Math.round(Math.abs(char.vel.x));
                 const playing = char.currentAnimation;
                 const running = char.run.speed*0.99;
 
@@ -133,7 +133,7 @@ export function createChar(index, id, socket, isClient, serverState) {
                             loop: false
                         });
                     }
-                }else if (char.isGrounded && char.vel.y == 0){
+                }else if (char.isGrounded && Math.round(Math.abs(char.vel.y)) <= 16){
                     if (char.crouching){
                         if (playing != "Crouch"){
                             char.skeleton.state.setAnimation(0,"Crouch",true);
