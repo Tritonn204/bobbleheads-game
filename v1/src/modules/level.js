@@ -87,32 +87,47 @@ export class Level {
                 const remotePlayer = serverState.remoteData[entity.id];
                 const remotePlayerOld = serverState.oldData[entity.id];
 
-                var lerpFactor = ((clock-serverState.lastUpdate)/(40 + serverState.ping/2));
-                lerpFactor = Math.min(1, lerpFactor);
+                var lerpFactor = (clock-serverState.lastUpdate)/(40 + serverState.ping/2)
 
-                const dest = {
-                    x:lerp(remotePlayerOld.pos.x, remotePlayer.pos.x, lerpFactor),
-                    y:lerp(remotePlayerOld.pos.y, remotePlayer.pos.y, lerpFactor)
+                //Decide between interpolation and extrapolation based on latency conditions
+                if (lerpFactor > 1) {
+                    entity.update(delta, serverState);
+
+                    entity.vel.y += physics.gravity*delta;
+                    entity.vel.y = Math.min(physics.terminalVelocity, entity.vel.y);
+
+                    entity.pos.x += entity.vel.x*delta;
+                    this.tileCollision.checkX(entity);
+
+                    entity.pos.y += entity.vel.y*delta;
+                    this.tileCollision.checkY(entity);
+                } else {
+                    lerpFactor = Math.min(1, lerpFactor);
+
+                    const dest = {
+                        x:lerp(remotePlayerOld.pos.x, remotePlayer.pos.x, lerpFactor),
+                        y:lerp(remotePlayerOld.pos.y, remotePlayer.pos.y, lerpFactor)
+                    }
+                    const newVel = {
+                        x:lerp(remotePlayerOld.vel.x, remotePlayer.vel.x, lerpFactor),
+                        y:lerp(remotePlayerOld.vel.y, remotePlayer.vel.y, lerpFactor)
+                    }
+
+                    entity.update(delta, serverState);
+
+                    //lerpFactor = Math.min(1,((clock - serverState.lastUpdate)/(40 + serverState.ping/2))*0.175);
+                    entity.pos.lerp(dest, (delta*1000)/(40+serverState.ping/2));
+                    entity.vel.lerp(newVel, 1);
+
+                    entity.isGrounded = remotePlayer.grounded;
+                    entity.hurtTime = remotePlayer.hurtTime;
+                    entity.hitSource = remotePlayer.hitSource;
+
+                    //Make sure other players face the proper direction
+                    if (entity.id != serverState.clientWallet) {
+                        entity.facing = remotePlayer.facing;
+                    }
                 }
-                const newVel = {
-                    x:lerp(remotePlayerOld.vel.x, remotePlayer.vel.x, lerpFactor),
-                    y:lerp(remotePlayerOld.vel.y, remotePlayer.vel.y, lerpFactor)
-                }
-
-                //lerpFactor = Math.min(1,((clock - serverState.lastUpdate)/(40 + serverState.ping/2))*0.175);
-                entity.pos.lerp(dest, delta/0.04);
-                entity.vel.lerp(newVel, 1);
-
-                entity.isGrounded = remotePlayer.grounded;
-                entity.hurtTime = remotePlayer.hurtTime;
-                entity.hitSource = remotePlayer.hitSource;
-
-                //Make sure other players face the proper direction
-                if (entity.id != serverState.clientWallet) {
-                    entity.facing = remotePlayer.facing;
-                }
-
-                entity.update(delta, serverState);
 
                 //TO BE UNCOMMENTED UPON ROLLBACK IMPLEMENTATION
                 //entity.vel.y += physics.gravity*delta;
