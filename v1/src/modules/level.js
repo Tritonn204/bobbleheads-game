@@ -78,7 +78,7 @@ export class Level {
     update(delta, serverState, clock) {
         if (!serverState.remoteData) return;
 
-        const nextUpdate = serverState.lastUpdate + 20;
+        const nextUpdate = serverState.lastUpdate + 40 + serverState.ping/2;
         const remoteDelta = (clock - nextUpdate);
 
         this.entities.forEach((entity) => {
@@ -87,31 +87,21 @@ export class Level {
                 const remotePlayer = serverState.remoteData[entity.id];
                 const remotePlayerOld = serverState.oldData[entity.id];
 
-                const lerpFactor = (clock-serverState.lastUpdate)/(200);
+                var lerpFactor = ((clock-serverState.lastUpdate)/(40 + serverState.ping/2));
+                lerpFactor = Math.min(1, lerpFactor);
 
                 const dest = {
                     x:lerp(remotePlayerOld.pos.x, remotePlayer.pos.x, lerpFactor),
                     y:lerp(remotePlayerOld.pos.y, remotePlayer.pos.y, lerpFactor)
                 }
-                const newvel = {
+                const newVel = {
                     x:lerp(remotePlayerOld.vel.x, remotePlayer.vel.x, lerpFactor),
                     y:lerp(remotePlayerOld.vel.y, remotePlayer.vel.y, lerpFactor)
                 }
-                entity.pos.lerp(dest,delta*0.22);
-                entity.vel.lerp(remotePlayer.vel,delta*0.22);
 
-                //interpolate between the client position and the server position based on how much time has passed
-                entity.update(delta, serverState);
-                entity.vel.y += physics.gravity*delta;
-
-                if (entity.vel.y > physics.terminalVelocity)
-                    entity.vel.y = physics.terminalVelocity;
-
-                //predict entity movement for a visibly smoother client, avoid jitters/snaps
-                entity.pos.x += entity.vel.x*delta;
-                this.tileCollision.checkX(entity);
-                entity.pos.y += entity.vel.y*delta;
-                this.tileCollision.checkY(entity);
+                //lerpFactor = Math.min(1,((clock - serverState.lastUpdate)/(40 + serverState.ping/2))*0.175);
+                entity.pos.lerp(dest, delta/0.04);
+                entity.vel.lerp(newVel, 1);
 
                 entity.isGrounded = remotePlayer.grounded;
                 entity.hurtTime = remotePlayer.hurtTime;
@@ -121,6 +111,14 @@ export class Level {
                 if (entity.id != serverState.clientWallet) {
                     entity.facing = remotePlayer.facing;
                 }
+
+                entity.update(delta, serverState);
+
+                //TO BE UNCOMMENTED UPON ROLLBACK IMPLEMENTATION
+                //entity.vel.y += physics.gravity*delta;
+
+                //entity.pos.x += entity.vel.x*delta;
+                //entity.pos.y += entity.vel.y*delta;
             }
         });
     }

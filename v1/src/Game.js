@@ -412,7 +412,7 @@ export function OnlineGame() {
                 serverState.ping = PING;
                 stats.latency.text = 'PING: ' + PING + 'ms';
             });
-        }, 2500);
+        }, 1000);
     }
 
     //Initializes game on page load, after fetching required data from the server
