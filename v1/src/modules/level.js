@@ -90,7 +90,7 @@ export class Level {
                 var lerpFactor = (clock-serverState.lastUpdate)/(40 + serverState.ping/2)
 
                 //Decide between interpolation and extrapolation based on latency conditions
-                if (lerpFactor > 1) {
+                if (lerpFactor > 2) {
                     entity.update(delta, serverState);
 
                     entity.vel.y += physics.gravity*delta;
@@ -118,6 +118,10 @@ export class Level {
                     //lerpFactor = Math.min(1,((clock - serverState.lastUpdate)/(40 + serverState.ping/2))*0.175);
                     entity.pos.lerp(dest, (delta*1000)/(40+serverState.ping/2));
                     entity.vel.lerp(newVel, 1);
+
+                    if (getDistance(entity.pos,dest) > 128) {
+                        entity.pos.set(dest.x, dest.y);
+                    }
 
                     entity.isGrounded = remotePlayer.grounded;
                     entity.hurtTime = remotePlayer.hurtTime;
