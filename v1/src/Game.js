@@ -277,6 +277,7 @@ export function OnlineGame(props) {
       newSkin.addSkin(spine.spineData.findSkin(`right-legs/right-legs-${race}`));
 
       var eyes = bhTraits.EYES.indexOf(scanTrait(traits,'Eyes'));
+      eyes = Math.max(eyes,0);
       newSkin.addSkin(spine.spineData.findSkin(`eyes/eyes-${race}-${eyes}`));
 
       var mouth = bhTraits.MOUTHS.indexOf(scanTrait(traits,'Mouth'));
