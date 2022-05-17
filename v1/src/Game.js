@@ -296,6 +296,7 @@ export function OnlineGame(props) {
       newSkin.addSkin(spine.spineData.findSkin(`hat/hat-${race}-${hat}`));
 
       var pants = bhTraits.PANTS.indexOf(scanTrait(traits,'Bottoms'));
+      pants = Math.max(pants,0);
       newSkin.addSkin(spine.spineData.findSkin(`left-pants/left-pants-${pants}`));
       newSkin.addSkin(spine.spineData.findSkin(`right-pants/right-pants-${pants}`));
 
