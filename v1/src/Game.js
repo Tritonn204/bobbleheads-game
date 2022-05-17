@@ -318,7 +318,7 @@ export function OnlineGame(props) {
 
     const data = {
       hp: entity.hp,
-      skeleton: 0,
+      skeleton: props.tokenID,
       pos: entity.pos,
       vel: entity.vel,
       command: entity.command,
@@ -334,7 +334,7 @@ export function OnlineGame(props) {
     server.on('addPlayer', data => {
       if (!serverState.players[data.id]) {
         createChar(data.skeleton, data.id, socket, false, serverState).then((player) => {
-          newPlayer(skeleton, container, level, player);
+          newPlayer(skeleton, container, level, player, data.skeleton);
           serverState.players[data.id] = player;
         });
       }
@@ -385,7 +385,7 @@ export function OnlineGame(props) {
         //serverState.predictions[key] = {pos: {x: userData.pos.x, y: userData.pos.y}}
         if (!serverState.players[key]) {
           createChar(userData.skeleton, key, server, false, serverState).then((player) => {
-            newPlayer(skeleton, container, level, player, serverState);
+            newPlayer(skeleton, container, level, player, serverState, userData.skeleton);
             player.pos.set(userData.pos.x, userData.pos.y);
             player.hp = userData.hp;
             player.facing = userData.facing;
@@ -396,9 +396,9 @@ export function OnlineGame(props) {
     });
   }
 
-  const newPlayer = async (BS, container, level, player, serverState) => {
+  const newPlayer = async (BS, container, level, player, serverState, tokenID) => {
     const BH =  new Spine(BS);
-    genSkin(BH, Math.floor(Math.random()*10000)+1);
+    genSkin(BH, tokenID);
 
     //genFounder(BH);
     animationManager.bobbleheadMix(BH);
@@ -472,7 +472,7 @@ export function OnlineGame(props) {
           //genSkin(bh, Math.floor(Math.random()*10000)+1);
           //const dummy = createSkeleton(app, resources);
 
-          genSkin(bh, Math.floor(props.tokenID));
+          genSkin(bh, Math.floor(serverState.initialData.skeleton || props.tokenID));
           animationManager.bobbleheadMix(bh);
           //animationManager.bobbleheadMix(dummy);
 
