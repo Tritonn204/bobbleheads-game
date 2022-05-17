@@ -29,8 +29,8 @@ export class Level {
 
     render(cam) {
         const bgSteps = this.bg.length + 1;
-        const bgScale = (cam.scale*64)/(3930/14);
         this.bg.forEach((layer, i) => {
+          const bgScale = (cam.scale*64)/(layer.texture.height/14);
           layer.tilePosition.x = ((-cam.pos.x/bgScale)*cam.scale)/(bgSteps-i);
           layer.scale.x = bgScale;
           layer.scale.y = bgScale;
@@ -107,19 +107,20 @@ export class Level {
                 var lerpFactor = (clock-serverState.lastUpdate)/(40 + serverState.ping/2)
 
                 //Decide between interpolation and extrapolation based on latency conditions
-                if (lerpFactor > 2) {
-                    entity.update(delta, serverState);
-
-                    entity.vel.y += physics.gravity*delta;
-                    entity.vel.y = Math.min(physics.terminalVelocity, entity.vel.y);
-
-                    entity.pos.x += entity.vel.x*delta;
-                    this.tileCollision.checkX(entity);
-
-                    entity.pos.y += entity.vel.y*delta;
-                    this.tileCollision.checkY(entity);
-                } else {
-                    //lerpFactor = Math.min(1, lerpFactor);
+                // if (lerpFactor > 3) {
+                //     entity.update(delta, serverState);
+                //
+                //     entity.vel.y += physics.gravity*delta;
+                //     entity.vel.y = Math.min(physics.terminalVelocity, entity.vel.y);
+                //
+                //     entity.pos.x += entity.vel.x*delta;
+                //     this.tileCollision.checkX(entity);
+                //
+                //     entity.pos.y += entity.vel.y*delta;
+                //     this.tileCollision.checkY(entity);
+                // } else {
+                //
+                    lerpFactor = Math.min(1, lerpFactor);
 
                     const dest = {
                         x:lerp(remotePlayerOld.pos.x, remotePlayer.pos.x, lerpFactor),
@@ -133,7 +134,7 @@ export class Level {
                     entity.update(delta, serverState);
 
                     //lerpFactor = Math.min(1,((clock - serverState.lastUpdate)/(40 + serverState.ping/2))*0.175);
-                    entity.pos.set(dest.x, dest.y);
+                    entity.pos.lerp(dest, (delta*1000)/(40+serverState.ping/2));
                     entity.vel.lerp(newVel, 1);
 
                     entity.isGrounded = remotePlayer.grounded;
@@ -144,7 +145,7 @@ export class Level {
                     if (entity.id != serverState.clientWallet) {
                         entity.facing = remotePlayer.facing;
                     }
-                }
+                //}
 
                 //TO BE UNCOMMENTED UPON ROLLBACK IMPLEMENTATION
                 //entity.vel.y += physics.gravity*delta;
