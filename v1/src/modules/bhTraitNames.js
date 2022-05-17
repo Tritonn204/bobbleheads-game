@@ -45,4 +45,6 @@ export const SHIRTS = [ "Topless", "Basketball Jersey", "Track Suit Top", "Suit"
         "Camo Shirt", "Vest", "Football Jersey", "Jacket", "Santa Suit", "Astronaut Suit", "Jacket",
         "Longsleeve Shirt", "T-Shirt", "Crop Top", "Knight Armour" ];
 
+export const HATLESSHAIR = [1,2,7,8];
+
 export const armAssign = [ 0, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 1, 1, 1, 2, 1 ];

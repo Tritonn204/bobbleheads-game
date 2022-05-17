@@ -16,7 +16,7 @@ export class Level {
         this.tileSet = null;
         this.data = null;
         this.tileTextures = [];
-        this.data = null;
+        this.bg = [];
 
         this.xCount = 1;
         this.yCount = 1;
@@ -28,6 +28,15 @@ export class Level {
     }
 
     render(cam) {
+        const bgSteps = this.bg.length + 1;
+        const bgScale = (cam.scale*64)/(3930/14);
+        this.bg.forEach((layer, i) => {
+          layer.tilePosition.x = ((-cam.pos.x/bgScale)*cam.scale)/(bgSteps-i);
+          layer.scale.x = bgScale;
+          layer.scale.y = bgScale;
+          layer.width=(window.innerWidth/bgScale);
+        });
+
         this.data.layers.forEach(layer => {
             if (!layer.name.includes('collision')){
                 layer.positions.forEach(tile => {
@@ -75,6 +84,14 @@ export class Level {
         this.entityCollision.entities.add(entity);
     }
 
+    createBg(texture, container) {
+      let tiling = new PIXI.TilingSprite(texture,texture.width,texture.height);
+      tiling.position.set(0,0);
+      container.addChild(tiling);
+
+      return tiling;
+    }
+
     update(delta, serverState, clock) {
         if (!serverState.remoteData) return;
 
@@ -102,7 +119,7 @@ export class Level {
                     entity.pos.y += entity.vel.y*delta;
                     this.tileCollision.checkY(entity);
                 } else {
-                    lerpFactor = Math.min(1, lerpFactor);
+                    //lerpFactor = Math.min(1, lerpFactor);
 
                     const dest = {
                         x:lerp(remotePlayerOld.pos.x, remotePlayer.pos.x, lerpFactor),
@@ -116,12 +133,8 @@ export class Level {
                     entity.update(delta, serverState);
 
                     //lerpFactor = Math.min(1,((clock - serverState.lastUpdate)/(40 + serverState.ping/2))*0.175);
-                    entity.pos.lerp(dest, (delta*1000)/(40+serverState.ping/2));
+                    entity.pos.set(dest.x, dest.y);
                     entity.vel.lerp(newVel, 1);
-
-                    if (getDistance(entity.pos,dest) > 128) {
-                        entity.pos.set(dest.x, dest.y);
-                    }
 
                     entity.isGrounded = remotePlayer.grounded;
                     entity.hurtTime = remotePlayer.hurtTime;
