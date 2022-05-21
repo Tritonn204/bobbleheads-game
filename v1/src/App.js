@@ -156,7 +156,7 @@ function App() {
     if (currentAccount && !gameId) {
       return (
         <>
-          <div className='stroke'><h2>Choose Your Bobblehead!</h2></div>
+          <div className='stroke2'><h2>Choose Your Bobblehead!</h2></div>
           <div className='selector'>
           {ownedNFTs.map((token, i) => {
             var cssClass = selectedNFT == i ? 'nftImage selectedNFT' : 'nftImage responsive';
@@ -241,12 +241,27 @@ function App() {
       case 0:
       return(
         <div className="App-header">
-        <div className='stroke'><h1>BOBBLEHEAD BRAWL ALPHA</h1></div>
-        {connectWalletButton()}
+        <img className='bg' src='bg.png' />
+        <div className='centered'>
+          <h1 className='stroke'>Bobbleheads Brawl Alpha v0.1.0</h1>
+          <h3 className='stroke2'>Create & join casual lobbies to master movement & fundamentals with friends!</h3>
+          {connectWalletButton()}
+          <h5 className='stroke2'>*Game mechanics are currently subject to change and updates without prior notice</h5>
+        </div>
         {createRoomButton()}
         <h3>{roomHeader()}</h3>
         <div className = 'multiplayerButtons'>
         {enterButtons()}
+        </div>
+        <div className='centered yellowCard'>
+          <h1 className='stroke'>Controls:</h1>
+          <h3 className='stroke2'>
+          Movement - Left/Right Arrow <br />
+          Jump - Up Arrow<br />
+          Action/Attack - D<br />
+          Crouch - Down Arrow<br />
+          Try combining movement inputs with attacks for more variety & air movement!
+          </h3>
         </div>
         </div>
       )
